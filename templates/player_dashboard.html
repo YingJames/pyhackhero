@@ -1,0 +1,37 @@
+<!-- templates/player_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Player Dashboard{% endblock %}
+{% block content %}
+    <h2>Welcome, {{ username }}!</h2>
+    
+    <h3>Quests In-Progress</h3>
+    <ul class="list-group">
+        {% for quest in quests_in_progress %}
+            <li class="list-group-item">
+                <a href="{{ url_for('quest_page', quest_id=quest.qid) }}">{{ quest.questname }}</a>
+            </li>
+        {% else %}
+            <li class="list-group-item">No quests in progress.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3 class="mt-4">Quests Completed</h3>
+    <ul class="list-group">
+        {% for quest in quests_completed %}
+            <li class="list-group-item">{{ quest.questname }}</li>
+        {% else %}
+            <li class="list-group-item">No quests completed yet.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3 class="mt-4">Quests Available</h3>
+    <ul class="list-group">
+        {% for quest in quests_available %}
+            <li class="list-group-item">
+                <a href="{{ url_for('quest_page', quest_id=quest.qid) }}">{{ quest.questname }}</a>
+            </li>
+        {% else %}
+            <li class="list-group-item">No quests available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

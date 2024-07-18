@@ -1,0 +1,71 @@
+<!-- templates/create_quest.html -->
+{% extends "base.html" %}
+{% block title %}Create Quest{% endblock %}
+{% block content %}
+    <div class="mb-3">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">&larr; Back to Admin Dashboard</a>
+    </div>
+
+    <h2>Create New Quest</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="quest_name" class="form-label">Quest Name</label>
+            <input type="text" class="form-control" id="quest_name" name="quest_name" required>
+        </div>
+        
+        <div id="problems">
+            <div class="problem mb-3">
+                <h4>Problem 1</h4>
+                <div class="mb-2">
+                    <label for="problem_link_1" class="form-label">Problem Link</label>
+                    <input type="url" class="form-control" id="problem_link_1" name="problem_link" required>
+                </div>
+                <div class="mb-2">
+                    <label for="difficulty_1" class="form-label">Difficulty</label>
+                    <select class="form-select" id="difficulty_1" name="difficulty" required>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="topics_1" class="form-label">Topics (comma-separated)</label>
+                    <input type="text" class="form-control" id="topics_1" name="topics" required>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-secondary mb-3" onclick="addProblem()">Add Problem</button>
+        <button type="submit" class="btn btn-primary">Create Quest</button>
+    </form>
+
+    <script>
+        let problemCount = 1;
+
+        function addProblem() {
+            problemCount++;
+            const problemDiv = document.createElement('div');
+            problemDiv.className = 'problem mb-3';
+            problemDiv.innerHTML = `
+                <h4>Problem ${problemCount}</h4>
+                <div class="mb-2">
+                    <label for="problem_link_${problemCount}" class="form-label">Problem Link</label>
+                    <input type="url" class="form-control" id="problem_link_${problemCount}" name="problem_link" required>
+                </div>
+                <div class="mb-2">
+                    <label for="difficulty_${problemCount}" class="form-label">Difficulty</label>
+                    <select class="form-select" id="difficulty_${problemCount}" name="difficulty" required>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="topics_${problemCount}" class="form-label">Topics (comma-separated)</label>
+                    <input type="text" class="form-control" id="topics_${problemCount}" name="topics" required>
+                </div>
+            `;
+            document.getElementById('problems').appendChild(problemDiv);
+        }
+    </script>
+{% endblock %}

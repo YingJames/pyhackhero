@@ -1,0 +1,50 @@
+<!-- templates/quest_page.html -->
+{% extends "base.html" %}
+{% block title %}{{ quest.questname }}{% endblock %}
+{% block content %}
+    <div class="mb-3">
+        <a href="{{ url_for('player_dashboard') }}" class="btn btn-secondary">&larr; Back to Dashboard</a>
+    </div>
+
+    <h2>{{ quest.questname }}</h2>
+    
+    {% if not is_started %}
+        <form action="{{ url_for('start_quest', quest_id=quest.qid) }}" method="GET">
+            <button type="submit" class="btn btn-primary mb-3">Start Quest</button>
+        </form>
+    {% endif %}
+    
+    <ul class="list-group">
+        {% for problem in problems %}
+            <li class="list-group-item">
+                {% if is_started %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="problem{{ problem.pid }}"
+                               onchange="completeProblem({{ quest.qid }}, {{ problem.pid }})">
+                        <label class="form-check-label" for="problem{{ problem.pid }}">
+                            <a href="{{ problem.problemlink }}" target="_blank">{{ problem.problemlink }}</a>
+                            ({{ problem.difficulty }})
+                        </label>
+                    </div>
+                {% else %}
+                    <a href="{{ problem.problemlink }}" target="_blank">{{ problem.problemlink }}</a>
+                    ({{ problem.difficulty }})
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function completeProblem(questId, problemId) {
+            fetch(`/complete_problem/${questId}/${problemId}`)
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Problem completed successfully');
+                    } else {
+                        console.error('Failed to complete problem');
+                    }
+                });
+                document.getElementById('problem' + problemId).style.display = 'none';
+        }
+    </script>
+{% endblock %}

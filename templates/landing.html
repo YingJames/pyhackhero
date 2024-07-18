@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+    <h1>Welcome to HackHero</h1>
+    <p>Start your coding journey today!</p>
+    <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+    <a href="{{ url_for('login') }}" class="btn btn-secondary">Login</a>
+{% endblock %}
