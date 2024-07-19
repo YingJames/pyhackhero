@@ -77,11 +77,13 @@ def quest_page(quest_id):
     quest = get_quest(quest_id)
     problems = get_quest_problems(quest_id)
     is_started = is_quest_started(session['user_id'], quest_id)
+    completed_problems = get_completed_problems(session['user_id'])
     
     return render_template('quest_page.html',
                            quest=quest,
                            problems=problems,
-                           is_started=is_started)
+                           is_started=is_started,
+                           completed_problems=completed_problems)
 
 @app.route('/start_quest/<int:quest_id>')
 def start_quest(quest_id):
