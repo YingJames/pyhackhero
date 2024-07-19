@@ -33,7 +33,8 @@ CREATE TABLE Topics (
 CREATE TABLE Problems (
     PID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     ProblemLink VARCHAR(255) NOT NULL,
-    Difficulty VARCHAR(20) NOT NULL
+    Difficulty VARCHAR(20) NOT NULL,
+    CHECK (Difficulty IN ('Easy', 'Medium', 'Hard'))
 );
 
 CREATE TABLE ProblemTopics (
@@ -175,11 +176,11 @@ BEFORE INSERT ON QuestProblems
 FOR EACH ROW
 EXECUTE FUNCTION check_quest_problem();
 
--- prevent user or problem from being added to CompletedProblems if they do not exist
+-- prevent player or problem from being added to CompletedProblems if they do not exist
 CREATE OR REPLACE FUNCTION check_completed_problem()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Users WHERE UID = NEW.UID) THEN
+    IF NOT EXISTS (SELECT 1 FROM Players WHERE UID = NEW.UID) THEN
         RAISE EXCEPTION 'User does not exist';
     END IF;
     IF NOT EXISTS (SELECT 1 FROM Problems WHERE PID = NEW.PID) THEN
