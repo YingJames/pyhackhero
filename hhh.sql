@@ -80,7 +80,7 @@ SELECT u.UID, u.Username, u.Email, COUNT(*) as HardProblemCount
 FROM Users u
 JOIN CompletedProblems cp ON u.UID = cp.UID
 JOIN Problems p ON cp.PID = p.PID
-WHERE p.Difficulty = 'Hard'
+WHERE LOWER(p.Difficulty) = 'hard'
 GROUP BY u.UID, u.Username, u.Email
 ORDER BY HardProblemCount DESC;
 
