@@ -93,12 +93,15 @@ def start_quest(quest_id):
     start_quest_for_player(session['user_id'], quest_id)
     return redirect(url_for('quest_page', quest_id=quest_id))
 
-@app.route('/complete_problem/<int:quest_id>/<int:problem_id>')
-def complete_problem(quest_id, problem_id):
+@app.route('/update_complete_problem/<int:quest_id>/<int:problem_id>/<string:is_complete>')
+def update_complete_problem(quest_id, problem_id, is_complete):
     if 'user_id' not in session or session['is_admin']:
         return redirect(url_for('login'))
     
-    complete_problem_for_player(session['user_id'], problem_id)
+    if is_complete == 'true':
+        complete_problem_for_player(session['user_id'], problem_id)
+    elif is_complete == 'false':
+        uncomplete_problem_for_player(session['user_id'], problem_id)
     return redirect(url_for('quest_page', quest_id=quest_id))
 
 @app.route('/admin_dashboard')

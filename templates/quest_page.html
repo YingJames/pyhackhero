@@ -38,7 +38,9 @@
 
     <script>
         function completeProblem(questId, problemId) {
-            fetch(`/complete_problem/${questId}/${problemId}`)
+            let isChecked = document.querySelector(`#problem${problemId}`).checked.toString();
+            console.log(isChecked);
+            fetch(`/update_complete_problem/${questId}/${problemId}/${isChecked}`)
                 .then(response => {
                     if (response.ok) {
                         console.log('Problem completed successfully');
@@ -46,7 +48,7 @@
                         console.error('Failed to complete problem');
                     }
                 });
-                document.getElementById('problem' + problemId).style.display = 'none';
+                // document.getElementById('problem' + problemId).style.display = 'none';
         }
     </script>
 {% endblock %}
