@@ -289,3 +289,27 @@ GRANT SELECT ON HardestPlayers TO scout;
 -- Grant roles to users
 GRANT adminmanager TO admin_user;
 GRANT scout TO scout_user;
+
+-- Index on Users.Username for faster username lookups
+CREATE INDEX idx_users_username ON Users(Username);
+
+-- Index on Users.Email for potential email lookups (if used in your application)
+CREATE INDEX idx_users_email ON Users(Email);
+
+-- Index on Quests.UID for faster retrieval of quests created by a specific admin
+CREATE INDEX idx_quests_uid ON Quests(UID);
+
+-- Index on Problems.Difficulty for queries filtering or grouping by difficulty
+CREATE INDEX idx_problems_difficulty ON Problems(Difficulty);
+
+-- Index on CompletedProblems.CompletionDate for date-based queries
+CREATE INDEX idx_completedproblems_completiondate ON CompletedProblems(CompletionDate);
+
+-- Composite index on PlayerQuests for queries filtering by both UID and IsCompleted
+CREATE INDEX idx_playerquests_uid_iscompleted ON PlayerQuests(UID, IsCompleted);
+
+-- Index on QuestProblems.PID for faster joins with Problems table
+CREATE INDEX idx_questproblems_pid ON QuestProblems(PID);
+
+-- Index on ProblemTopics.Type for faster topic-based queries
+CREATE INDEX idx_problemtopics_type ON ProblemTopics(Type);
