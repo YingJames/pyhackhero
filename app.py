@@ -69,7 +69,7 @@ def player_dashboard():
                            quests_completed=quests_completed,
                            quests_available=quests_available)
 
-@app.route('/quest/<int:quest_id>')
+@app.route('/quest/<string:quest_id>')
 def quest_page(quest_id):
     if 'user_id' not in session or session['is_admin']:
         return redirect(url_for('login'))
@@ -85,7 +85,7 @@ def quest_page(quest_id):
                            is_started=is_started,
                            completed_problems=completed_problems)
 
-@app.route('/start_quest/<int:quest_id>')
+@app.route('/start_quest/<string:quest_id>')
 def start_quest(quest_id):
     if 'user_id' not in session or session['is_admin']:
         return redirect(url_for('login'))
@@ -93,7 +93,7 @@ def start_quest(quest_id):
     start_quest_for_player(session['user_id'], quest_id)
     return redirect(url_for('quest_page', quest_id=quest_id))
 
-@app.route('/update_complete_problem/<int:quest_id>/<int:problem_id>/<string:is_complete>')
+@app.route('/update_complete_problem/<string:quest_id>/<string:problem_id>/<string:is_complete>')
 def update_complete_problem(quest_id, problem_id, is_complete):
     if 'user_id' not in session or session['is_admin']:
         return redirect(url_for('login'))
