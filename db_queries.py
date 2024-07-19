@@ -2,12 +2,13 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 from datetime import datetime
+from collections import defaultdict
 
 # Database connection parameters
 DB_PARAMS = {
-    'dbname': 'hackhero',
+    'dbname': 'hhh3',
     'user': 'postgres',
-    'password': 'JJyab',
+    'password': 'password',
     'host': 'localhost'
 }
 
@@ -65,15 +66,26 @@ def get_quests_available(uid):
     with get_db_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute("""
-                SELECT q.QID, q.QuestName
+                SELECT q.QID, q.QuestName, array_agg(DISTINCT t.Type) as topics
                 FROM Quests q
+                JOIN QuestProblems qp ON q.QID = qp.QID
+                JOIN Problems p ON qp.PID = p.PID
+                JOIN ProblemTopics pt ON p.PID = pt.PID
+                JOIN Topics t ON pt.Type = t.Type
                 WHERE q.QID NOT IN (
                     SELECT pq.QID
                     FROM PlayerQuests pq
                     WHERE pq.UID = %s
                 )
+                GROUP BY q.QID, q.QuestName
             """, (uid,))
             return cur.fetchall()
+
+def get_all_topics():
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT DISTINCT Type FROM Topics ORDER BY Type")
+            return [row[0] for row in cur.fetchall()]
 
 def get_completed_problems(uid):
     with get_db_connection() as conn:
@@ -161,3 +173,45 @@ def create_quest_with_problems(uid, quest_name, problems):
             except psycopg2.Error:
                 conn.rollback()
                 raise
+
+def get_problems_per_difficulty(uid):
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("""
+                SELECT p.Difficulty, COUNT(*) as count
+                FROM CompletedProblems cp
+                JOIN Problems p ON cp.PID = p.PID
+                WHERE cp.UID = %s
+                GROUP BY p.Difficulty
+            """, (uid,))
+            return cur.fetchall()
+
+def get_problems_per_topic(uid):
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("""
+                SELECT t.Type, p.Difficulty, COUNT(*) as count
+                FROM CompletedProblems cp
+                JOIN Problems p ON cp.PID = p.PID
+                JOIN ProblemTopics pt ON p.PID = pt.PID
+                JOIN Topics t ON pt.Type = t.Type
+                WHERE cp.UID = %s
+                GROUP BY t.Type, p.Difficulty
+            """, (uid,))
+            results = cur.fetchall()
+            
+            topics = defaultdict(lambda: defaultdict(int))
+            for row in results:
+                topics[row['type']][row['difficulty']] = row['count']
+            
+            return dict(topics)
+
+def get_problems_completed_today(uid):
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*) as count
+                FROM CompletedProblems
+                WHERE UID = %s AND DATE(CompletionDate) = CURRENT_DATE
+            """, (uid,))
+            return cur.fetchone()[0]

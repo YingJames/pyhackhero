@@ -4,7 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from db_queries import *
 
-app = Flask(__name__)
+
+app = Flask(__name__, static_folder='static')
 app.secret_key = 'your_secret_key'  # Change this to a random secret key
 
 @app.route('/')
@@ -62,12 +63,36 @@ def player_dashboard():
     quests_in_progress = get_quests_in_progress(session['user_id'])
     quests_completed = get_quests_completed(session['user_id'])
     quests_available = get_quests_available(session['user_id'])
+    all_topics = get_all_topics()
     
     return render_template('player_dashboard.html', 
                            username=session['username'],
                            quests_in_progress=quests_in_progress,
                            quests_completed=quests_completed,
-                           quests_available=quests_available)
+                           quests_available=quests_available,
+                           all_topics=all_topics)
+
+@app.route('/player_stats')
+def player_stats():
+    if 'user_id' not in session or session['is_admin']:
+        return redirect(url_for('login'))
+    
+    uid = session['user_id']
+    
+    # Get total problems completed per difficulty
+    problems_per_difficulty = get_problems_per_difficulty(uid)
+    
+    # Get problems completed per topic (and per difficulty)
+    problems_per_topic = get_problems_per_topic(uid)
+    
+    # Get problems completed today
+    problems_completed_today = get_problems_completed_today(uid)
+    
+    return render_template('player_stats.html',
+                           username=session['username'],
+                           problems_per_difficulty=problems_per_difficulty,
+                           problems_per_topic=problems_per_topic,
+                           problems_completed_today=problems_completed_today)
 
 @app.route('/quest/<string:quest_id>')
 def quest_page(quest_id):

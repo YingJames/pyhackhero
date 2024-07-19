@@ -250,7 +250,7 @@ INSERT INTO Admins (UID)
 VALUES ('00000000-0000-0000-0000-000000000000');
 
 -- Create database users and assign privileges
--- CREATE USER admin_user WITH PASSWORD 'admin_password';
+CREATE USER admin_user WITH PASSWORD 'admin_password';
 GRANT SELECT ON UsersView TO admin_user;
 GRANT INSERT ON Users TO admin_user;
 GRANT SELECT ON Players TO admin_user;
@@ -264,7 +264,7 @@ CREATE ROLE adminmanager;
 GRANT SELECT ON UsersView TO adminmanager;
 GRANT SELECT ON Users TO adminmanager;
 GRANT SELECT ON Players TO adminmanager;
-GRANT SELECT, INSERT, UPDATE, DELETE ON Admins TO adminmanager;
+GRANT ALL PRIVILEGES ON Admins TO adminmanager;
 
 CREATE ROLE scout;
 GRANT SELECT ON HardestPlayers TO scout;

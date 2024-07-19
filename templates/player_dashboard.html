@@ -1,9 +1,8 @@
-<!-- templates/player_dashboard.html -->
 {% extends "base.html" %}
 {% block title %}Player Dashboard{% endblock %}
 {% block content %}
     <h2>Welcome, {{ username }}!</h2>
-    
+    <a href="{{ url_for('player_stats') }}" class="btn btn-primary mb-3">View Your Stats</a>
     <h3>Quests In-Progress</h3>
     <ul class="list-group">
         {% for quest in quests_in_progress %}
@@ -24,14 +23,53 @@
         {% endfor %}
     </ul>
     
-    <h3 class="mt-4">Quests Available</h3>
-    <ul class="list-group">
-        {% for quest in quests_available %}
-            <li class="list-group-item">
+    <div class="dashboard-section">
+        <h2>Quests Available</h2>
+        <div class="filter-section">
+            <input type="text" id="questNameFilter" class="form-control filter-input" placeholder="Filter by quest name">
+            <select id="topicFilter" class="form-control filter-select">
+                <option value="">All Topics</option>
+                {% for topic in all_topics %}
+                <option value="{{ topic }}">{{ topic }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <ul id="availableQuestsList" class="quest-list">
+            {% for quest in quests_available %}
+            <li class="quest-item" data-topics="{{ quest.topics|join(',') }}">
                 <a href="{{ url_for('quest_page', quest_id=quest.qid) }}">{{ quest.questname }}</a>
             </li>
-        {% else %}
-            <li class="list-group-item">No quests available.</li>
-        {% endfor %}
-    </ul>
+            {% else %}
+            <li>No quests available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const questNameFilter = document.getElementById('questNameFilter');
+        const topicFilter = document.getElementById('topicFilter');
+        const questList = document.getElementById('availableQuestsList');
+        const questItems = questList.getElementsByClassName('quest-item');
+
+        function filterQuests() {
+            const nameFilter = questNameFilter.value.toLowerCase();
+            const selectedTopic = topicFilter.value.toLowerCase();
+
+            for (let item of questItems) {
+                const questName = item.textContent.toLowerCase();
+                const questTopics = item.dataset.topics.toLowerCase();
+
+                const nameMatch = questName.includes(nameFilter);
+                const topicMatch = selectedTopic === '' || questTopics.includes(selectedTopic);
+
+                item.style.display = nameMatch && topicMatch ? '' : 'none';
+            }
+        }
+
+        questNameFilter.addEventListener('input', filterQuests);
+        topicFilter.addEventListener('change', filterQuests);
+    });
+</script>
 {% endblock %}
