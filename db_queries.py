@@ -5,9 +5,9 @@ from datetime import datetime
 
 # Database connection parameters
 DB_PARAMS = {
-    'dbname': 'hhh',
+    'dbname': 'hackhero',
     'user': 'postgres',
-    'password': 'password',
+    'password': 'JJyab',
     'host': 'localhost'
 }
 
@@ -74,6 +74,18 @@ def get_quests_available(uid):
                 )
             """, (uid,))
             return cur.fetchall()
+
+def get_completed_problems(uid):
+    with get_db_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("""
+                SELECT PID
+                FROM CompletedProblems
+                WHERE UID = %s
+            """, (uid,))
+            # print(cur.fetchall())
+            completed_problems = [row[0] for row in cur.fetchall()]
+            return completed_problems
 
 def get_quest(quest_id):
     with get_db_connection() as conn:
